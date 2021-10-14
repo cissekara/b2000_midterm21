@@ -1,0 +1,381 @@
+NAME: CISSE, SERIGNE CHEIKH MODOU KARA CISSE
+3QUESTION 3
+
+> load("~/Household_Pulse_data.RData")
+> attach(Household_Pulse_data)
+variable1 <- xtabs(~ EEDUC + RECVDVACC + REGION)
+summary(variable1)
+
+#Call: xtabs(formula = ~EEDUC + RECVDVACC + REGION)
+#Number of cases in table: 69114 
+#Number of factors: 3 
+#Test for independence of all factors:
+#  Chisq = 3318, df = 72, p-value = 0
+#Chi-squared approximation may be incorrect
+
+LVLINCOME <- as.numeric( INCOME)
+BLACK <- RRACE
+MODEL_TEMP <- lm(LVLINCOME~  BLACK)
+summary(MODEL_TEMP)
+
+#OUTPUT
+> LVLINCOME <- as.numeric( INCOME)
+> summary(MODEL_TEMP)
+
+Call:
+  lm(formula = income1 ~ BLACK)
+
+Residuals:
+  Min      1Q  Median      3Q     Max 
+-3.1157 -2.3906  0.0217  2.0217  5.0645 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  3.978275   0.009966 399.192  < 2e-16 ***
+  BLACKBlack  -1.042761   0.033826 -30.827  < 2e-16 ***
+  BLACKAsian   0.137423   0.041077   3.345 0.000822 ***
+  BLACKOther  -0.587703   0.043184 -13.609  < 2e-16 ***
+  ---
+  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 2.378 on 69110 degrees of freedom
+Multiple R-squared:  0.01597,	Adjusted R-squared:  0.01593 
+F-statistic: 373.8 on 3 and 69110 DF,  p-value: < 2.2e-16
+#WE CAN SAY THAT BLACKS ARE THE LEAST SUBSISTING WITH FINANCIAL MEANS ACCROSS THE REGIONS. THE "OTHERS" ARE FOLLOWING THE POOR BLACKS AND THE  BLACKASIANS. 
+
+
+
+detach(Household_Pulse_data)
+detach(Household_Pulse_data)
+attach(Household_Pulse_data)
+income1 <- as.numeric( INCOME)
+regression <- lm(income1 ~  BLACK)
+summary(regression)
+
+BLACK1 <- as.numeric(RRACE)
+INCOME2<- as.numeric(INCOME)
+COMBO <- factor((BLACK1 + 2*INCOME2), levels=c(1,2), labels = c("BLACK" , "INCOM2"))
+
+norm_varb <- function(X_in) {
+  (X_in - min(X_in, na.rm = TRUE))/( max(X_in, na.rm = TRUE) - min(X_in, na.rm = TRUE) )
+}
+
+BLACK1 <- as.numeric(RRACE)
+norm_BLACK1 <- norm_varb(BLACK1)
+
+data_use_prelim <- data.frame(norm_BLACK1)
+good_obs_data_use <- complete.cases(data_use_prelim,norm_BLACK1)
+dat_use <- subset(data_use_prelim,good_obs_data_use)
+y_use <- subset(norm_BLACK1,good_obs_data_use)
+set.seed(12345)
+NN_obs <- sum(good_obs_data_use == 1)
+select1 <- (runif(NN_obs) < 0.9)
+train_data <- subset(Household_Pulse_data,select1)
+test_data <- subset(Household_Pulse_data,(!select1))
+cl_data <- y_use[select1]
+true_data <- y_use[!select1]
+summary(cl_data)
+
+prop.table(summary(cl_data))
+
+summary(train_data)
+
+
+for (indx in seq(1, 9, by= 2)) {
+  pred_hadcovid <- knn(train_data, test_data, cl_data, k = indx, l = 0, prob = FALSE, use.all = TRUE)
+  num_correct_labels <- sum(pred_hadcovid == true_data)
+  correct_rate <- num_correct_labels/length(true_data)
+  print(c(indx,correct_rate))
+}
+#unable to see the find, but I beilve that minorities are more likely to have covid because
+# of social norms, it would be a good variabel to use for prediction.
+
+
+
+
+
+
+
+
+
+
+
+questiON 1
+attach(Household_Pulse_data)
+variable1 <- xtabs(~ EEDUC + RECVDVACC + REGION)
+summary(variable1)
+VARIABLE2 <-lm(as.numeric(RECVDVACC)~ EEDUC* REGION)
+summary(VARIABLE2)
+
+#Call:
+lm(formula = as.numeric(RECVDVACC) ~ EEDUC * REGION)
+
+Residuals:
+  Min       1Q   Median       3Q      Max 
+-1.31579 -0.14480 -0.06940 -0.03744  0.97435 
+
+Coefficients:
+  Estimate Std. Error t value
+(Intercept)                    2.34043    0.04896  47.806
+EEDUCsome hs                  -0.19869    0.05730  -3.467
+EEDUCHS diploma               -0.20950    0.04987  -4.201
+EEDUCsome coll                -0.22931    0.04959  -4.625
+EEDUCassoc deg                -0.24165    0.05003  -4.830
+EEDUCbach deg                 -0.29943    0.04933  -6.070
+EEDUCadv deg                  -0.31478    0.04933  -6.381
+REGIONSouth                   -0.02254    0.05606  -0.402
+REGIONMidwest                 -0.09427    0.06426  -1.467
+REGIONWest                    -0.14448    0.05620  -2.571
+EEDUCsome hs:REGIONSouth       0.19660    0.06617   2.971
+EEDUCHS diploma:REGIONSouth    0.11823    0.05722   2.066
+EEDUCsome coll:REGIONSouth     0.07768    0.05682   1.367
+EEDUCassoc deg:REGIONSouth     0.07765    0.05742   1.352
+EEDUCbach deg:REGIONSouth      0.05715    0.05654   1.011
+EEDUCadv deg:REGIONSouth       0.03691    0.05655   0.653
+EEDUCsome hs:REGIONMidwest     0.24397    0.07524   3.243
+EEDUCHS diploma:REGIONMidwest  0.16103    0.06546   2.460
+EEDUCsome coll:REGIONMidwest   0.15006    0.06505   2.307
+EEDUCassoc deg:REGIONMidwest   0.14095    0.06561   2.148
+EEDUCbach deg:REGIONMidwest    0.12267    0.06476   1.894
+EEDUCadv deg:REGIONMidwest     0.10607    0.06482   1.636
+EEDUCsome hs:REGIONWest        0.26963    0.06639   4.062
+EEDUCHS diploma:REGIONWest     0.20416    0.05745   3.554
+EEDUCsome coll:REGIONWest      0.17817    0.05694   3.129
+EEDUCassoc deg:REGIONWest      0.17500    0.05753   3.042
+EEDUCbach deg:REGIONWest       0.17018    0.05667   3.003
+EEDUCadv deg:REGIONWest        0.15247    0.05670   2.689
+Pr(>|t|)    
+(Intercept)                    < 2e-16 ***
+  EEDUCsome hs                  0.000526 ***
+  EEDUCHS diploma               2.66e-05 ***
+  EEDUCsome coll                3.76e-06 ***
+  EEDUCassoc deg                1.37e-06 ***
+  EEDUCbach deg                 1.28e-09 ***
+  EEDUCadv deg                  1.77e-10 ***
+  REGIONSouth                   0.687575    
+REGIONMidwest                 0.142393    
+REGIONWest                    0.010142 *  
+  EEDUCsome hs:REGIONSouth      0.002968 ** 
+  EEDUCHS diploma:REGIONSouth   0.038820 *  
+  EEDUCsome coll:REGIONSouth    0.171560    
+EEDUCassoc deg:REGIONSouth    0.176312    
+EEDUCbach deg:REGIONSouth     0.312127    
+EEDUCadv deg:REGIONSouth      0.513988    
+EEDUCsome hs:REGIONMidwest    0.001185 ** 
+  EEDUCHS diploma:REGIONMidwest 0.013904 *  
+  EEDUCsome coll:REGIONMidwest  0.021062 *  
+  EEDUCassoc deg:REGIONMidwest  0.031682 *  
+  EEDUCbach deg:REGIONMidwest   0.058205 .  
+EEDUCadv deg:REGIONMidwest    0.101782    
+EEDUCsome hs:REGIONWest       4.88e-05 ***
+  EEDUCHS diploma:REGIONWest    0.000380 ***
+  EEDUCsome coll:REGIONWest     0.001753 ** 
+  EEDUCassoc deg:REGIONWest     0.002351 ** 
+  EEDUCbach deg:REGIONWest      0.002673 ** 
+  EEDUCadv deg:REGIONWest       0.007169 ** 
+  ---
+  Signif. codes:  
+  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.3356 on 69086 degrees of freedom
+Multiple R-squared:  0.03462,	Adjusted R-squared:  0.03424 
+F-statistic: 91.77 on 27 and 69086 DF,  p-value: < 2.2e-16
+
+> attach(Household_Pulse_data)
+The following objects are masked from Household_Pulse_data (pos = 3):
+  
+  ANXIOUS, ANYWORK, CHILDFOOD, CHLDCARE, CURFOODSUF, DOSESRV, eat_in_restaurant, EEDUC, EGENID_BIRTH, ENROLLNONE, EST_ST, EVICT, FORCLOSE,
+GENID_DESCRIBE, GETVACRV, HADCOVID, INCOME, KIDDOSES, KIDGETVAC, KIDS_12_17Y, KIDS_5_11Y, KIDS_LT5Y, KINDWORK, LIVQTRRV, MORTCUR, MS,
+Num_kids_homeschool, Num_kids_Priv_School, Num_kids_Pub_School, PRIVHLTH, PUBHLTH, RECVDVACC, REGION, RENTCUR, RHISPANIC, RRACE, RSNNOWRKRV,
+SEXUAL_ORIENTATION, Shop_in_store, TENURE, Works_onsite, works_remote, WORRY, WRKLOSSRV
+
+> variable1 <- xtabs(~ EEDUC + RECVDVACC + REGION)
+> summary(variable1)
+Call: xtabs(formula = ~EEDUC + RECVDVACC + REGION)
+Number of cases in table: 69114 
+Number of factors: 3 
+Test for independence of all factors:
+  Chisq = 3318, df = 72, p-value = 0
+Chi-squared approximation may be incorrect
+> VARIABLE2 <-lm(as.numeric(RECVDVACC)~ EEDUC* REGION)
+> summary(VARIABLE2)
+
+Call:
+  lm(formula = as.numeric(RECVDVACC) ~ EEDUC * REGION)
+
+Residuals:
+  Min       1Q   Median       3Q      Max 
+-1.31579 -0.14480 -0.06940 -0.03744  0.97435 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                    2.34043    0.04896  47.806  < 2e-16 ***
+  EEDUCsome hs                  -0.19869    0.05730  -3.467 0.000526 ***
+  EEDUCHS diploma               -0.20950    0.04987  -4.201 2.66e-05 ***
+  EEDUCsome coll                -0.22931    0.04959  -4.625 3.76e-06 ***
+  EEDUCassoc deg                -0.24165    0.05003  -4.830 1.37e-06 ***
+  EEDUCbach deg                 -0.29943    0.04933  -6.070 1.28e-09 ***
+  EEDUCadv deg                  -0.31478    0.04933  -6.381 1.77e-10 ***
+  REGIONSouth                   -0.02254    0.05606  -0.402 0.687575    
+REGIONMidwest                 -0.09427    0.06426  -1.467 0.142393    
+REGIONWest                    -0.14448    0.05620  -2.571 0.010142 *  
+  EEDUCsome hs:REGIONSouth       0.19660    0.06617   2.971 0.002968 ** 
+  EEDUCHS diploma:REGIONSouth    0.11823    0.05722   2.066 0.038820 *  
+  EEDUCsome coll:REGIONSouth     0.07768    0.05682   1.367 0.171560    
+EEDUCassoc deg:REGIONSouth     0.07765    0.05742   1.352 0.176312    
+EEDUCbach deg:REGIONSouth      0.05715    0.05654   1.011 0.312127    
+EEDUCadv deg:REGIONSouth       0.03691    0.05655   0.653 0.513988    
+EEDUCsome hs:REGIONMidwest     0.24397    0.07524   3.243 0.001185 ** 
+  EEDUCHS diploma:REGIONMidwest  0.16103    0.06546   2.460 0.013904 *  
+  EEDUCsome coll:REGIONMidwest   0.15006    0.06505   2.307 0.021062 *  
+  EEDUCassoc deg:REGIONMidwest   0.14095    0.06561   2.148 0.031682 *  
+  EEDUCbach deg:REGIONMidwest    0.12267    0.06476   1.894 0.058205 .  
+EEDUCadv deg:REGIONMidwest     0.10607    0.06482   1.636 0.101782    
+EEDUCsome hs:REGIONWest        0.26963    0.06639   4.062 4.88e-05 ***
+  EEDUCHS diploma:REGIONWest     0.20416    0.05745   3.554 0.000380 ***
+  EEDUCsome coll:REGIONWest      0.17817    0.05694   3.129 0.001753 ** 
+  EEDUCassoc deg:REGIONWest      0.17500    0.05753   3.042 0.002351 ** 
+  EEDUCbach deg:REGIONWest       0.17018    0.05667   3.003 0.002673 ** 
+  EEDUCadv deg:REGIONWest        0.15247    0.05670   2.689 0.007169 ** 
+  ---
+  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.3356 on 69086 degrees of freedom
+Multiple R-squared:  0.03462,	Adjusted R-squared:  0.03424 
+F-statistic: 91.77 on 27 and 69086 DF,  p-value: < 2.2e-16
+
+#wE NOTICED THAT THE MAJORITY OF PEOPLES WHO ACCEPTED TO BE VACCINATED IN THE FOUR REGIONS HAVE AT LEAST A HIGH SCHOOL DIPLOMA AND ABOVE. THOVE VALUES ARE REALLY SIGNIFICANT.
+(Intercept)                    2.34043    0.04896  47.806  < 2e-16 ***
+  EEDUCsome hs                  -0.19869    0.05730  -3.467 0.000526 ***
+  EEDUCHS diploma               -0.20950    0.04987  -4.201 2.66e-05 ***
+  EEDUCsome coll                -0.22931    0.04959  -4.625 3.76e-06 ***
+  EEDUCassoc deg                -0.24165    0.05003  -4.830 1.37e-06 ***
+  EEDUCbach deg                 -0.29943    0.04933  -6.070 1.28e-09 ***
+  EEDUCadv deg                  -0.31478    0.04933  -6.381 1.77e-10 ***
+
+  #mostly peoples who got the masters and above are more willing to be VACCINATTED. 
+  
+  #IN ADDITION WE WILL COMPARE PERSONS WITH HIGH LEVELS OF EDUCATION ( AVD DEGREE) AND THEIR WILLINGNESS TO BE VACCINATED. SEE BELOW 
+  EEDUCadv deg:REGIONSouth       0.03691    0.05655   0.653 0.513988 
+EEDUCadv deg:REGIONWest         0.15247    0.05670   2.689 0.007169 ** 
+  EEDUCadv deg:REGIONMidwest     0.10607    0.06482   1.636 0.101782 
+#BY COMPARING THIS, NOTICE THAT WELL-EDUCATED PEOPLES IN REGION WEST ARE MORE WILLING TO BE VACCINATED. 
+
+detach(Household_Pulse_data)
+
+
+#questiON 2
+
+
+detach(Household_Pulse_data)
+detach()
+attach(Household_Pulse_data)
+variable2 <- xtabs(~EEDUC + RECVDVACC + GENID_DESCRIBE)
+summary(variable2)
+variable3 <- lm(as.numeric(RECVDVACC)~ EEDUC* GENID_DESCRIBE)
+summary(variable3)
+#OUTPUT:
+Coefficients:
+  (Intercept)                               EEDUCsome hs                            EEDUCHS diploma  
+2.07143                                   -0.39143                                   -0.42208  
+EEDUCsome coll                             EEDUCassoc deg                              EEDUCbach deg  
+-0.39510                                   -0.57949                                   -0.51030  
+EEDUCadv deg                         GENID_DESCRIBEmale                       GENID_DESCRIBEfemale  
+-0.49157                                    0.11844                                    0.23249  
+GENID_DESCRIBEtransgender                        GENID_DESCRIBEother            EEDUCsome hs:GENID_DESCRIBEmale  
+0.38312                                    0.38690                                    0.47068  
+EEDUCHS diploma:GENID_DESCRIBEmale          EEDUCsome coll:GENID_DESCRIBEmale          EEDUCassoc deg:GENID_DESCRIBEmale  
+0.44739                                    0.35893                                    0.52039  
+EEDUCbach deg:GENID_DESCRIBEmale            EEDUCadv deg:GENID_DESCRIBEmale          EEDUCsome hs:GENID_DESCRIBEfemale  
+0.38564                                    0.33904                                    0.39444  
+EEDUCHS diploma:GENID_DESCRIBEfemale        EEDUCsome coll:GENID_DESCRIBEfemale        EEDUCassoc deg:GENID_DESCRIBEfemale  
+0.31799                                    0.25488                                    0.43028  
+EEDUCbach deg:GENID_DESCRIBEfemale          EEDUCadv deg:GENID_DESCRIBEfemale     EEDUCsome hs:GENID_DESCRIBEtransgender  
+0.28637                                    0.23105                                    0.07974  
+EEDUCHS diploma:GENID_DESCRIBEtransgender   EEDUCsome coll:GENID_DESCRIBEtransgender   EEDUCassoc deg:GENID_DESCRIBEtransgender  
+0.18182                                    0.03489                                    0.32495  
+EEDUCbach deg:GENID_DESCRIBEtransgender     EEDUCadv deg:GENID_DESCRIBEtransgender           EEDUCsome hs:GENID_DESCRIBEother  
+0.07749                                    0.27512                                    0.13310  
+EEDUCHS diploma:GENID_DESCRIBEother         EEDUCsome coll:GENID_DESCRIBEother         EEDUCassoc deg:GENID_DESCRIBEother  
+0.21117                                    0.03052                                    0.28208  
+EEDUCbach deg:GENID_DESCRIBEother           EEDUCadv deg:GENID_DESCRIBEother  
+0.19052                                    0.20585  
+
+
+lm(formula = as.numeric(RECVDVACC) ~ EEDUC * GENID_DESCRIBE)
+
+Residuals:
+  Min       1Q   Median       3Q      Max 
+-1.45455 -0.15471 -0.07999 -0.04340  1.50806 
+
+Coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                                2.07143    0.08802  23.533  < 2e-16 ***
+  EEDUCsome hs                              -0.39143    0.10994  -3.560 0.000371 ***
+  EEDUCHS diploma                           -0.42208    0.09194  -4.591 4.42e-06 ***
+  EEDUCsome coll                            -0.39510    0.09095  -4.344 1.40e-05 ***
+  EEDUCassoc deg                            -0.57949    0.09286  -6.241 4.38e-10 ***
+  EEDUCbach deg                             -0.51030    0.08993  -5.674 1.40e-08 ***
+  EEDUCadv deg                              -0.49157    0.09014  -5.454 4.95e-08 ***
+  GENID_DESCRIBEmale                         0.11844    0.09184   1.290 0.197160    
+GENID_DESCRIBEfemale                       0.23249    0.09099   2.555 0.010619 *  
+  GENID_DESCRIBEtransgender                  0.38312    0.13270   2.887 0.003889 ** 
+  GENID_DESCRIBEother                        0.38690    0.11076   3.493 0.000478 ***
+  EEDUCsome hs:GENID_DESCRIBEmale            0.47068    0.11428   4.119 3.81e-05 ***
+  EEDUCHS diploma:GENID_DESCRIBEmale         0.44739    0.09580   4.670 3.01e-06 ***
+  EEDUCsome coll:GENID_DESCRIBEmale          0.35893    0.09475   3.788 0.000152 ***
+  EEDUCassoc deg:GENID_DESCRIBEmale          0.52039    0.09671   5.381 7.44e-08 ***
+  EEDUCbach deg:GENID_DESCRIBEmale           0.38564    0.09374   4.114 3.90e-05 ***
+  EEDUCadv deg:GENID_DESCRIBEmale            0.33904    0.09395   3.609 0.000308 ***
+  EEDUCsome hs:GENID_DESCRIBEfemale          0.39444    0.11328   3.482 0.000498 ***
+  EEDUCHS diploma:GENID_DESCRIBEfemale       0.31799    0.09490   3.351 0.000807 ***
+  EEDUCsome coll:GENID_DESCRIBEfemale        0.25488    0.09389   2.715 0.006638 ** 
+  EEDUCassoc deg:GENID_DESCRIBEfemale        0.43028    0.09580   4.492 7.08e-06 ***
+  EEDUCbach deg:GENID_DESCRIBEfemale         0.28637    0.09289   3.083 0.002051 ** 
+  EEDUCadv deg:GENID_DESCRIBEfemale          0.23105    0.09310   2.482 0.013076 *  
+  EEDUCsome hs:GENID_DESCRIBEtransgender     0.07974    0.19350   0.412 0.680277    
+EEDUCHS diploma:GENID_DESCRIBEtransgender  0.18182    0.14895   1.221 0.222228    
+EEDUCsome coll:GENID_DESCRIBEtransgender   0.03489    0.14205   0.246 0.805962    
+EEDUCassoc deg:GENID_DESCRIBEtransgender   0.32495    0.16036   2.026 0.042730 *  
+  EEDUCbach deg:GENID_DESCRIBEtransgender    0.07749    0.14250   0.544 0.586577    
+EEDUCadv deg:GENID_DESCRIBEtransgender     0.27512    0.14342   1.918 0.055075 .  
+EEDUCsome hs:GENID_DESCRIBEother           0.13310    0.14842   0.897 0.369872    
+EEDUCHS diploma:GENID_DESCRIBEother        0.21117    0.11870   1.779 0.075249 .  
+EEDUCsome coll:GENID_DESCRIBEother         0.03052    0.11606   0.263 0.792595    
+EEDUCassoc deg:GENID_DESCRIBEother         0.28208    0.11995   2.352 0.018698 *  
+  EEDUCbach deg:GENID_DESCRIBEother          0.19052    0.11516   1.654 0.098040 .  
+EEDUCadv deg:GENID_DESCRIBEother           0.20585    0.11528   1.786 0.074159 .  
+---
+  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.3293 on 69079 degrees of freedom
+Multiple R-squared:  0.07051,	Adjusted R-squared:  0.07006 
+F-statistic: 154.1 on 34 and 69079 DF,  p-value: < 2.2e-16
+
+#WE NOTICE THAT GENDER AND LEVEL OF EDUCATION MATTER IN THE DECISION MAKING PROCESS. 
+
+EEDUCsome hs                              -0.39143    0.10994  -3.560 0.000371 ***
+  EEDUCHS diploma                           -0.42208    0.09194  -4.591 4.42e-06 ***
+  EEDUCsome coll                            -0.39510    0.09095  -4.344 1.40e-05 ***
+  EEDUCassoc deg                            -0.57949    0.09286  -6.241 4.38e-10 ***
+  EEDUCbach deg                             -0.51030    0.08993  -5.674 1.40e-08 ***
+  EEDUCadv deg                              -0.49157    0.09014  -5.454 4.95e-08 ***
+#THIS ABOVE DEMONSTRATE HOW INFORMED AND EDUCATED ARE THE PEOPLES WILLING TO GET VACCINATED. 
+
+  EEDUCadv deg:GENID_DESCRIBEfemale          0.23105    0.09310   2.482 0.013076 *
+  EEDUCadv deg:GENID_DESCRIBEmale            0.33904    0.09395   3.609 0.000308 ***
+  EEDUCadv deg:GENID_DESCRIBEtransgender     0.27512    0.14342   1.918 0.055075
+ EEDUCadv deg:GENID_DESCRIBEother           0.20585    0.11528   1.786 0.074159 .
+
+
+ #WE CAN EASILY NOTICE THAT  ACROSS THE REGIONS, BOTH STRAIGHT MALES AND FEMALES ( WITH HIGH LEVEL OF EDUCATION) ARE MORE WILLING TO BE EDUCATED. BY COMPARING BOTH HIGHLY EDUCATED MALES
+
+AND HIGHLY EDUCATED FEMALES WE NOTICE THAT MALES ARE MORE WILLING TO BE VACCINATED
+
+
+Please sign this.    
+_All of the work on this exam is my own, answered honestly as rules state._  
+Name:  CISSE, SERIGNE CHEIKH MODOU KARA
+  Date: OCTOBER 14, 2021
+  
+  
