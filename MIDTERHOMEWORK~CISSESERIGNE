@@ -1,0 +1,323 @@
+#Q3: 
+attach(Household_Pulse_data)
+variable1 <- xtabs(~ EEDUC + RECVDVACC + REGION)
+summary(variable1)
+
+#Call: xtabs(formula = ~EEDUC + RECVDVACC + REGION)
+#Number of cases in table: 69114 
+#Number of factors: 3 
+#Test for independence of all factors:
+#  Chisq = 3318, df = 72, p-value = 0
+#Chi-squared approximation may be incorrect
+
+summary(RRACE)
+# White Black Asian Other 
+# 56938  5412  3561  3203 
+ASIANPEOPLES <- (Household_Pulse_data$RRACE == "Asian")
+summary(ASIANPEOPLES)
+
+#   Mode   FALSE    TRUE 
+#logical   65553    3561 
+
+subsetAsian <- subset(Household_Pulse_data, ASIANPEOPLES)
+summary (subsetAsian)
+
+
+# RHISPANIC      RRACE                 
+#Not Hispanic:3354   White:   0                    
+#Hispanic    : 207   Black:   0   
+#                   Asian:3561                                                  
+#                   Other:   0 
+
+NOTsubsetAsian <- subset(Household_Pulse_data, !ASIANPEOPLES)
+summary (NOTsubsetAsian)
+
+
+
+#Choose a subgroup of the sample to consider and provide summary statistics of that subgroup. Explain why this subgroup is interesting.
+#Looking at Income Levels between Asians making "HH Income == $75K - 99.9 K"
+
+summary(INCOME)
+#     NA HH income         less than $25k    HH income $25k - $34.9k    HH income $35k - 49.9    HH income $50k - 74.9     HH income $75 - 99.9 
+#       20335                     4600                     5805                     9330                     7830                    10117 
+#   HH income $100k - 149     HH income $150 - 199        HH income $200k + 
+#                   4980                     6117                        0 
+
+summary(subsetAsian$INCOME)
+
+ASIANINCOME <-subsetAsian$INCOME == "HH income $75 - 99.9"
+summary(ASIANINCOME)
+#Mode       FALSE    TRUE 
+#logical    3079     482 
+
+#We can see that out of the sample population in all data set, Asians making "HH income $75 - 99.9 " are 482 out of 10117. That is roughly 4.7642% of the subgroup.                                                           
+
+#INCOME     Num_kids_Pub_School Num_kids_Priv_School Num_kids_homeschool        Works_onsite           works_remote           Shop_in_store 
+#NA                   :1149   Min.   :0.000       Min.   :0.000        Min.   :0.000       NA           : 406   NA             : 510   NA              : 475  
+#HH income $150 - 199 : 521   1st Qu.:1.000       1st Qu.:1.000        1st Qu.:0.000       worked onsite:1731   worked remotely:1561   shopped in store:2569  
+#HH income $75 - 99.9 : 482   Median :1.000       Median :1.000        Median :1.000       no           :1424   no             :1490   no              : 517  
+#HH income $35k - 49.9: 363   Mean   :1.562       Mean   :1.087        Mean   :0.663                                                                          
+#HH income $50k - 74.9: 344   3rd Qu.:2.000       3rd Qu.:2.000        3rd Qu.:1.000                                                                          
+#HH income $100k - 149: 332   Max.   :4.000       Max.   :2.000        Max.   :2.000                                                                          
+#(Other)              : 370   NA's   :2691        NA's   :3354         NA's   :3478   
+#We notice that  Asians in total in this data set of 69114 participants are accounted for 3561. Asians are the third largest groups after Whites ( biggest group) , followed by Blacks (second leading group). 
+
+#Based on the Income lower limit of $75000 and highest limit of $99,9999, I am assuming they have a very high level of education as well. 
+#This may include NAs that are NOT showing in the results summary.
+#My hypothesis is that Asians are decently better off compared to Blacks and the "other" subgroup of the data set., given their their level of income
+
+summary(Household_Pulse_data$EEDUC =="adv deg")
+#Mode   FALSE    TRUE 
+#logical   51383   17731
+NOTsubsetAsian <- subset(Household_Pulse_data, !ASIANPEOPLES)
+summary (NOTsubsetAsian)
+summary(NOTsubsetAsian$EEDUC =="adv deg")
+
+ASIANEDUCATION <- (Household_Pulse_data$EEDUC == "adv deg") &  (Household_Pulse_data$RRACE == "Asian")
+summary(ASIANEDUCATION)
+#  Mode   FALSE    TRUE 
+#logical   67791    1323
+
+EVERYBODYELSE <-(Household_Pulse_data$EEDUC == "adv deg") &  (Household_Pulse_data$RRACE == "White") & (Household_Pulse_data$RRACE == "Black") & (Household_Pulse_data$RRACE == "Other")
+summary(EVERYBODYELSE)
+
+
+WHITEPEOPLES <- (Household_Pulse_data$RRACE == "White")
+summary(WHITEPEOPLES)
+
+WHITEEDUCATION <- (Household_Pulse_data$EEDUC == "adv deg") &  (Household_Pulse_data$RRACE == "White")        
+summary(WHITEEDUCATION)
+#   Mode   FALSE    TRUE 
+# logical   54542   14572
+
+BLACKEDUCATION <- (Household_Pulse_data$EEDUC == "adv deg") & (Household_Pulse_data$RRACE == "Black")
+summary(BLACKEDUCATION)
+
+#Mode      FALSE    TRUE 
+#logical   67911    1203
+
+OTHEREDUCATION <- (Household_Pulse_data$EEDUC == "adv deg") &  (Household_Pulse_data$RRACE == "Other")        
+summary(OTHEREDUCATION)
+#Mode       FALSE    TRUE 
+#logical   68481     633
+
+OTHERRACEEDUCATION <- WHITEEDUCATION + BLACKEDUCATION + OTHEREDUCATION
+summary(OTHERRACEEDUCATION)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#0.00000 0.00000 0.00000 0.03572 0.00000 2.00000 
+
+# WE CAN NOTICE THAT 3.7572% OF OUR DATA SET AND WHO ARE NOT "ASIANS" HAVE AN ADVANCED DEGREE. THIS INCLUDES WHITES, BLACKS AND OTHERS.
+
+
+VARIABLE2 <-lm((OTHERRACEEDUCATION)~ ASIANPEOPLES * REGION)
+summary(VARIABLE2)
+
+
+Call:
+  lm(formula = (OTHERRACEEDUCATION) ~ ASIANPEOPLES * REGION)
+
+# Residuals:
+#  Min       1Q   Median       3Q      Max 
+# -0.05288 -0.05288 -0.03402 -0.02443  1.97557 
+
+#Coefficients:
+#  Estimate Std. Error t value Pr(>|t|)    
+#(Intercept)                     0.029627   0.002298  12.893  < 2e-16 ***
+#  ASIANPEOPLESTRUE               -0.029627   0.010306  -2.875  0.00404 ** 
+#  REGIONSouth                     0.023249   0.002775   8.379  < 2e-16 ***
+#  REGIONMidwest                  -0.005197   0.003039  -1.710  0.08723 .  
+#  REGIONWest                      0.004397   0.002800   1.570  0.11633    
+#  ASIANPEOPLESTRUE:REGIONSouth   -0.023249   0.012849  -1.809  0.07040 .  
+#  ASIANPEOPLESTRUE:REGIONMidwest  0.005197   0.016163   0.322  0.74782    
+#  ASIANPEOPLESTRUE:REGIONWest    -0.004397   0.011774  -0.373  0.70880    
+---
+#  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+#  Residual standard error: 0.2293 on 69106 degrees of freedom
+#  Multiple R-squared:  0.003584,	Adjusted R-squared:  0.003483 
+#  F-statistic: 35.51 on 7 and 69106 DF,  p-value: < 2.2e-16
+
+  
+  #regression: Form a hypothesis test about an interesting variable, explore whether your chosen subgroup differs from the rest of sample.  
+summary(EEDUC)
+ASSOCIATES <- (EEDUC == "assoc deg")
+BACHELORS <-  (EEDUC ==  "bach deg")
+ADVDEGREE <- (EEDUC == "adv deg")
+COMBO <- factor((ASSOCIATES + 2*BACHELORS + 3*ADVDEGREE + 4*ASIANEDUCATION), levels=c(1,2,3,4), labels = c("ASSOCIATES" , "BACHELORS", "ADVDEGREE","ASIANEDUCATION"))
+
+norm_varb <- function(X_in) {
+  (X_in - min(X_in, na.rm = TRUE))/( max(X_in, na.rm = TRUE) - min(X_in, na.rm = TRUE) )
+}
+summary(INCOME)
+BLACK <- (RRACE == "Black")
+EXTREMELYPOOR <- norm_varb(INCOME == "HH income less than $25k")
+VERYPOOR <- norm_varb(INCOME == "HH income $25k - $34.9k")
+POOR <- norm_varb(INCOME == "HH income $35k - 49.9")
+DECENT <- norm_varb(INCOME == "HH income $50k - 74.9")
+RICH <- norm_varb(INCOME == "HH income $75 - 99.9")
+OTHERRACEEDUCATION <- WHITEEDUCATION + BLACKEDUCATION + OTHEREDUCATION
+ASIANEDUCATION <- (Household_Pulse_data$EEDUC == "adv deg") &  (Household_Pulse_data$RRACE == "Asian")
+
+data_use_prelim <- data.frame(EXTREMELYPOOR, VERYPOOR, POOR, DECENT, RICH, BLACK)
+good_obs_data_use <- complete.cases(data_use_prelim,COMBO)
+dat_use <- subset(data_use_prelim,good_obs_data_use)
+y_use <- subset(COMBO,good_obs_data_use)
+set.seed(12345)
+NN_obs <- sum(good_obs_data_use == 1)
+select1 <- (runif(NN_obs) < 0.9)
+train_data <- subset(Household_Pulse_data,select1)
+test_data <- subset(Household_Pulse_data,(!select1))
+cl_data <- y_use[select1]
+true_data <- y_use[!select1]
+summary(cl_data)
+
+prop.table(summary(cl_data))
+
+summary(train_data)
+
+
+for (indx in seq(1, 9, by= 2)) {
+  pred_group <- knn(train_data, test_data, cl_data, k = indx, l = 0, prob = FALSE, use.all = TRUE)
+  num_correct_labels <- sum(COMBO == true_data)
+  correct_rate <- num_correct_labels/length(true_data)
+  print(c(indx,correct_rate))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#questiON 1
+attach(Household_Pulse_data)
+detach(Household_Pulse_data)
+variable1 <- xtabs(~ EEDUC + RECVDVACC + REGION)
+summary(variable1)
+
+summary(EEDUC)
+summary(RECVDVACC)
+summary(REGION)
+
+ASSOCIATES <- (EEDUC == "assoc deg")
+summary(ASSOCIATES)
+BACHELORS <-  (EEDUC ==  "bach deg")
+summary(BACHELORS)
+ADVDEGREE <- (EEDUC == "adv deg")
+summary(ADVDEGREE)
+ACADEMIC <-(Household_Pulse_data$EEDUC == "assoc deg") + (Household_Pulse_data$EEDUC==  "bach deg") 
+summary(ACADEMIC)
+lm((ACADEMIC)~ EEDUC* REGION)
+#WE notice that 3.99% of the data are related tothis experiment. 
+#INSTALL CAR PACKAGE
+anova(ACADEMIC)
+TukeyHSD(ACADEMIC)
+
+lm((RECVDVACC)~ EEDUC* REGION)
+summary(VARIABLE2)
+
+#Call:
+lm(formula = (RECVDVACC) ~ EEDUC * REGION)
+#Call:
+lm(formula = (RECVDVACC) ~ EEDUC * REGION)
+
+#Coefficients:
+#  (Intercept)                   EEDUCsome hs                EEDUCHS diploma                 EEDUCsome coll                 EEDUCassoc deg  
+#    2.34043                       -0.19869                       -0.20950                       -0.22931                       -0.24165  
+#  EEDUCbach deg                   EEDUCadv deg                    REGIONSouth                  REGIONMidwest                     REGIONWest  
+#    -0.29943                       -0.31478                       -0.02254                       -0.09427                       -0.14448  
+#  EEDUCsome hs:REGIONSouth    EEDUCHS diploma:REGIONSouth     EEDUCsome coll:REGIONSouth     EEDUCassoc deg:REGIONSouth      EEDUCbach deg:REGIONSouth  
+#     0.19660                        0.11823                        0.07768                        0.07765                        0.05715  
+#  EEDUCadv deg:REGIONSouth     EEDUCsome hs:REGIONMidwest  EEDUCHS diploma:REGIONMidwest   EEDUCsome coll:REGIONMidwest   EEDUCassoc deg:REGIONMidwest  
+#     0.03691                        0.24397                        0.16103                        0.15006                        0.14095  
+#  EEDUCbach deg:REGIONMidwest     EEDUCadv deg:REGIONMidwest        EEDUCsome hs:REGIONWest     EEDUCHS diploma:REGIONWest      EEDUCsome coll:REGIONWest  
+#      0.12267                        0.10607                        0.26963                        0.20416                        0.17817  
+#   EEDUCassoc deg:REGIONWest       EEDUCbach deg:REGIONWest        EEDUCadv deg:REGIONWest  
+#      0.17500                        0.17018                        0.15247  
+
+
+
+#questiON 2
+
+
+detach(Household_Pulse_data)
+detach()
+attach(Household_Pulse_data)
+variable2 <- xtabs(~EEDUC + RECVDVACC + GENID_DESCRIBE)
+summary(variable2)
+#Call: xtabs(formula = ~EEDUC + RECVDVACC + GENID_DESCRIBE)
+#Number of cases in table: 69114 
+#Number of factors: 3 
+#Test for independence of all factors:
+#  Chisq = 24466, df = 92, p-value = 0
+#Chi-squared approximation may be incorrect
+
+
+summary(GENID_DESCRIBE)
+
+#       NA        male      female transgender       other 
+#     1131       26796       40263         202         722 
+
+
+#tHESE ARE THE FIVE SUBGROUPS IN TERMS OF SEXUAL ORIENTATION. 
+
+summary(EEDUC)
+summary(RECVDVACC)
+summary(GENID_DESCRIBE)
+
+MALES <- (GENID_DESCRIBE == "male")
+summary(MALES)
+FEMALES <-  (GENID_DESCRIBE ==  "female")
+summary(FEMALES)
+
+
+PROCREATION <-(Household_Pulse_data$GENID_DESCRIBE == "female") + (Household_Pulse_data$GENID_DESCRIBE==  "male") 
+summary(PROCREATION)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  0.0000  1.0000  1.0000  0.9703  1.0000  1.0000 
+lm((PROCREATION)~ RECVDVACC* REGION)
+#WE notice that 97.3% of the data are related to this experiment straight males and straight females. 
+#INSTALL CAR PACKAGE
+anova(PROCREATION)
+TukeyHSD(PROCREATION)
+variable3 <- lm((RECVDVACC) ~ EEDUC * GENID_DESCRIBE)
+summary(variable3)
+#OUTPUT:
+#
+# Call:
+#  lm(formula = (RECVDVACC) ~ PROCREATION * REGION)
+
+#Coefficients:
+#  (Intercept)                PROCREATION                REGIONSouth              REGIONMidwest                 REGIONWest  
+#   1.853125                   0.221398                  -0.008541                  -0.069670                   0.050805  
+#   PROCREATION:REGIONSouth  PROCREATION:REGIONMidwest     PROCREATION:REGIONWest  
+#   0.058502                   0.116749                  -0.020045  
